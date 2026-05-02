@@ -7,6 +7,7 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:3000",
+    "https://pr-agent.akshat21.me"
 ]
 
 app.add_middleware(
