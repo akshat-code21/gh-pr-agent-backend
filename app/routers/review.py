@@ -1,12 +1,23 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-router = APIRouter()
+from app.agent.graph import run_agent
+from app.services.github import GithubService
+from ..depedencies import get_github_token
+
+router = APIRouter(dependencies=[Depends(get_github_token)])
+
 
 class Review(BaseModel):
-    url:str
+    url: str
 
-@router.post("/review",tags=["review"])
-async def review_pr(review:Review):
-    # trigger langgraph agent
-    return
+
+@router.post("/review", tags=["review"])
+async def review_pr(review: Review, github_token: str = Depends(get_github_token)):
+    result = run_agent(review.url, github_token)
+    review_body = result.get("review")
+    if not review_body:
+        return {"error": "failed to generate review"}
+    github_client = GithubService(github_token)
+    comment = github_client.comment_on_pr(review.url, review_body)
+    return {"comment": comment, "review": review_body}

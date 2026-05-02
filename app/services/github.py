@@ -10,12 +10,16 @@ class GithubService:
         self._access_token = access_token.strip()
 
     def get_repo_pr(self, pr_url:str):
-        owner,repo,number = pr_url.rstrip("/").split("/")[-3:]
+        owner = pr_url.rstrip("/").split("/")[-4]
+        repo = pr_url.rstrip("/").split("/")[-3]
+        number = pr_url.rstrip("/").split("/")[-1]
         repository = self._g.get_repo(f"{owner}/{repo}")
         return repository.get_pull(int(number))
 
     def get_pr_diff(self,pr_url:str):
-        owner,repo,number = pr_url.rstrip("/").split("/")[-3:]
+        owner = pr_url.rstrip("/").split("/")[-4]
+        repo = pr_url.rstrip("/").split("/")[-3]
+        number = pr_url.rstrip("/").split("/")[-1]
         repository = self._g.get_repo(f"{owner}/{repo}")
         pr = repository.get_pull(int(number))
         response = requests.get(pr.url,headers={
@@ -24,3 +28,11 @@ class GithubService:
         })
         response.raise_for_status()
         return response.text
+    
+    def comment_on_pr(self,pr_url:str,comment:str):
+        owner = pr_url.rstrip("/").split("/")[-4]
+        repo = pr_url.rstrip("/").split("/")[-3]
+        number = pr_url.rstrip("/").split("/")[-1]
+        repository = self._g.get_repo(f"{owner}/{repo}")
+        pr = repository.get_pull(int(number))
+        pr.create_issue_comment(comment)
