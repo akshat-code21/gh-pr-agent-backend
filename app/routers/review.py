@@ -20,4 +20,7 @@ async def review_pr(review: Review, github_token: str = Depends(get_github_token
         return {"error": "failed to generate review"}
     github_client = GithubService(github_token)
     comment = github_client.comment_on_pr(review.url, review_body)
-    return {"comment": comment, "review": review_body}
+    return {
+        "commentUrl": comment.html_url,
+        "review": review_body,
+    }
