@@ -35,4 +35,4 @@ class GithubService:
         number = pr_url.rstrip("/").split("/")[-1]
         repository = self._g.get_repo(f"{owner}/{repo}")
         pr = repository.get_pull(int(number))
-        pr.create_issue_comment(comment)
+        return pr.create_issue_comment(comment)
