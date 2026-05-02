@@ -3,7 +3,6 @@ from typing import TypedDict, Optional
 
 class AgentState(TypedDict):
     pr_url: str
-    github_token: str
 
     pr_details: dict
     raw_diff: str
