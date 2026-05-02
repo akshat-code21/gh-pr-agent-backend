@@ -3,9 +3,9 @@ from pydantic import BaseModel
 
 from app.agent.graph import run_agent
 from app.services.github import GithubService
-from ..depedencies import get_github_token
+from ..dependencies import get_github_token
 
-router = APIRouter(dependencies=[Depends(get_github_token)])
+router = APIRouter()
 
 
 class Review(BaseModel):
