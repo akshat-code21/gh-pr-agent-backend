@@ -1,5 +1,6 @@
 from github import Github, Auth
 import requests
+import re
 
 class GithubService:
     def __init__(self, access_token: str):
@@ -10,16 +11,18 @@ class GithubService:
         self._access_token = access_token.strip()
 
     def get_repo_pr(self, pr_url:str):
-        owner = pr_url.rstrip("/").split("/")[-4]
-        repo = pr_url.rstrip("/").split("/")[-3]
-        number = pr_url.rstrip("/").split("/")[-1]
+        # owner = pr_url.rstrip("/").split("/")[-4]
+        # repo = pr_url.rstrip("/").split("/")[-3]
+        # number = pr_url.rstrip("/").split("/")[-1]
+        owner, repo, number = self._parse_pr_url(pr_url)
         repository = self._g.get_repo(f"{owner}/{repo}")
         return repository.get_pull(int(number))
 
     def get_pr_diff(self,pr_url:str):
-        owner = pr_url.rstrip("/").split("/")[-4]
-        repo = pr_url.rstrip("/").split("/")[-3]
-        number = pr_url.rstrip("/").split("/")[-1]
+        # owner = pr_url.rstrip("/").split("/")[-4]
+        # repo = pr_url.rstrip("/").split("/")[-3]
+        # number = pr_url.rstrip("/").split("/")[-1]
+        owner, repo, number = self._parse_pr_url(pr_url)
         repository = self._g.get_repo(f"{owner}/{repo}")
         pr = repository.get_pull(int(number))
         response = requests.get(pr.url,headers={
@@ -30,9 +33,19 @@ class GithubService:
         return response.text
     
     def comment_on_pr(self,pr_url:str,comment:str):
-        owner = pr_url.rstrip("/").split("/")[-4]
-        repo = pr_url.rstrip("/").split("/")[-3]
-        number = pr_url.rstrip("/").split("/")[-1]
+        # owner = pr_url.rstrip("/").split("/")[-4]
+        # repo = pr_url.rstrip("/").split("/")[-3]
+        # number = pr_url.rstrip("/").split("/")[-1]
+        owner, repo, number = self._parse_pr_url(pr_url)
         repository = self._g.get_repo(f"{owner}/{repo}")
         pr = repository.get_pull(int(number))
         return pr.create_issue_comment(comment)
+    
+    def _parse_pr_url(self, pr_url: str) -> tuple[str, str, int]:
+        m = re.match(
+            r"https?://github\.com/([^/]+)/([^/]+)/pull/(\d+)",
+            pr_url.strip().split("?")[0].split("#")[0]
+        )
+        if not m:
+            raise ValueError(f"Invalid GitHub PR URL: {pr_url}")
+        return m.group(1), m.group(2), int(m.group(3))
