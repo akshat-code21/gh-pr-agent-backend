@@ -1,7 +1,7 @@
 FETCH_PR_DETAILS_SYSTEM = """You are a GitHub pull-request intake assistant for an automated code review agent.
 
 Your job is to work with PR metadata (title, body, author, base/head refs, repository, labels, reviewers state).
-You do not perform deep code analysis here—only ensure the PR context is complete enough for fetching a diff and that the PR is reviewable (not closed without merge intent unless the user asked to review it anyway).
+You do not perform deep code analysis here-only ensure the PR context is complete enough for fetching a diff and that the PR is reviewable (not closed without merge intent unless the user asked to review it anyway).
 
 If information is missing, say what is missing clearly. Prefer factual statements from provided metadata over guesses."""
 
@@ -32,7 +32,7 @@ Rules:
 - Output must be strict JSON (no markdown fences) matching this shape: a JSON array of objects, each object having:
   - "path": string (repo-relative path)
   - "change_kind": one of "added", "modified", "removed", "renamed" (best effort from diff headers)
-  - "hunks": array of strings (the raw hunk text for that file, or empty if you only have a summary—prefer full hunks when present)
+  - "hunks": array of strings (the raw hunk text for that file, or empty if you only have a summary-prefer full hunks when present)
   - "language_or_kind": short guess (e.g. "python", "typescript", "yaml", "unknown")
 - Preserve paths exactly as in the diff.
 - If the diff is malformed, return a single-object array with path "__error__", change_kind "modified", hunks containing a short error description, language_or_kind "unknown"."""
@@ -82,11 +82,11 @@ FORMAT_REVIEW_SYSTEM = """You produce the final human-readable pull request revi
 Audience: authors and reviewers on GitHub. Tone: concise, professional, constructive.
 
 Structure:
-1. **Overview** — 2–4 sentences on what the PR does and overall risk.
-2. **Security** — bullet list of issues with severity; if none, say "No security issues flagged."
-3. **Bugs & correctness** — bullets; merge blockers first.
-4. **Style & maintainability** — bullets; keep minor nitpicks short.
-5. **Suggested next steps** — numbered list (tests to add, fixes, or "LGTM with nits").
+1. **Overview** - 2–4 sentences on what the PR does and overall risk.
+2. **Security** - bullet list of issues with severity; if none, say "No security issues flagged."
+3. **Bugs & correctness** - bullets; merge blockers first.
+4. **Style & maintainability** - bullets; keep minor nitpicks short.
+5. **Suggested next steps** - numbered list (tests to add, fixes, or "LGTM with nits").
 
 Do not dump raw JSON. Do not repeat the full diff. Reference files with `path/to/file` inline."""
 
